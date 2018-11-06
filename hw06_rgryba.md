@@ -32,11 +32,11 @@ lm_function <- function(df, y, x, group_var) {
   df %>%
     group_by_(group_var) %>%
     nest() %>%
-    mutate(fit = map(data, ~ lm(df[[y]] ~ df[[x]], data=.))) %>%
+    mutate(fit = map(data, ~ lm(.[[y]] ~ .[[x]], data=.))) %>%
     mutate(output = map(fit, broom::tidy)) %>%
     unnest(output) %>%
     filter(any(p.value < 0.05)) %>%
-    mutate(term = replace(term, term == "df[[x]]", "year"))
+    mutate(term = replace(term, term == ".[[x]]", "year"))
 }
 
 lm_function(df=gapminder,y="pop", x="year", group_var=country)
@@ -45,14 +45,14 @@ lm_function(df=gapminder,y="pop", x="year", group_var=country)
     ## # A tibble: 284 x 6
     ##    country     term           estimate  std.error statistic  p.value
     ##    <fct>       <chr>             <dbl>      <dbl>     <dbl>    <dbl>
-    ##  1 Afghanistan (Intercept) -972185807. 294031308.     -3.31 0.000965
-    ##  2 Afghanistan year            506081.    148533.      3.41 0.000672
-    ##  3 Albania     (Intercept) -972185807. 294031308.     -3.31 0.000965
-    ##  4 Albania     year            506081.    148533.      3.41 0.000672
-    ##  5 Algeria     (Intercept) -972185807. 294031308.     -3.31 0.000965
-    ##  6 Algeria     year            506081.    148533.      3.41 0.000672
-    ##  7 Angola      (Intercept) -972185807. 294031308.     -3.31 0.000965
-    ##  8 Angola      year            506081.    148533.      3.41 0.000672
-    ##  9 Argentina   (Intercept) -972185807. 294031308.     -3.31 0.000965
-    ## 10 Argentina   year            506081.    148533.      3.41 0.000672
+    ##  1 Afghanistan (Intercept) -690631821. 105454007.     -6.55 6.48e- 5
+    ##  2 Afghanistan year            356886.     53271.      6.70 5.37e- 5
+    ##  3 Albania     (Intercept)  -87538213.   3952656.    -22.1  7.90e-10
+    ##  4 Albania     year             45526.      1997.     22.8  5.94e-10
+    ##  5 Algeria     (Intercept) -916286165.  42528206.    -21.5  1.04e- 9
+    ##  6 Algeria     year            472928.     21484.     22.0  8.39e-10
+    ##  7 Angola      (Intercept) -278392508.  21148305.    -13.2  1.22e- 7
+    ##  8 Angola      year            144330.     10683.     13.5  9.51e- 8
+    ##  9 Argentina   (Intercept) -798638010.  15222684.    -52.5  1.53e-13
+    ## 10 Argentina   year            417904.      7690.     54.3  1.08e-13
     ## # ... with 274 more rows

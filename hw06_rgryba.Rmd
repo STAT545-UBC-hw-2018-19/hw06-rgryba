@@ -23,11 +23,11 @@ lm_function <- function(df, y, x, group_var) {
   df %>%
     group_by_(group_var) %>%
     nest() %>%
-    mutate(fit = map(data, ~ lm(df[[y]] ~ df[[x]], data=.))) %>%
+    mutate(fit = map(data, ~ lm(.[[y]] ~ .[[x]], data=.))) %>%
     mutate(output = map(fit, broom::tidy)) %>%
     unnest(output) %>%
     filter(any(p.value < 0.05)) %>%
-    mutate(term = replace(term, term == "df[[x]]", "year"))
+    mutate(term = replace(term, term == ".[[x]]", "year"))
 }
 
 lm_function(df=gapminder,y="pop", x="year", group_var=country)
