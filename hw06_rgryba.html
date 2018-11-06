@@ -131,10 +131,7 @@ $(document).ready(function () {
 
 <pre class="r"><code>suppressPackageStartupMessages(library(tidyverse))
 library(repurrrsive)
-library(gapminder)
-suppressPackageStartupMessages(devtools::install_github(&quot;JoeyBernhardt/singer&quot;))</code></pre>
-<pre><code>## Skipping install of 'singer' from a github remote, the SHA1 (2b4fe9cb) has not changed since last install.
-##   Use `force = TRUE` to force installation</code></pre>
+library(gapminder)</code></pre>
 <div id="question-6---write-a-function-for-gapminder-data" class="section level2">
 <h2>Question 6 - Write a function for gapminder data</h2>
 <p>This function runs a linear model to model the relationship between two variables using a grouping variable. The output is a dataframe with the variable and associated lm output, for those models that had significant p-values. The example below uses the gapminder data and compares population to year for each country.</p>

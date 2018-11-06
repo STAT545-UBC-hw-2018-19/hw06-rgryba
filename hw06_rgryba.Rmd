@@ -15,7 +15,6 @@ editor_options:
 suppressPackageStartupMessages(library(tidyverse))
 library(repurrrsive)
 library(gapminder)
-suppressPackageStartupMessages(devtools::install_github("JoeyBernhardt/singer"))
 ```
 
 ##Question 6 - Write a function for gapminder data

@@ -16,12 +16,6 @@ editor_options:
 suppressPackageStartupMessages(library(tidyverse))
 library(repurrrsive)
 library(gapminder)
-suppressPackageStartupMessages(devtools::install_github("JoeyBernhardt/singer"))
-```
-
-```
-## Skipping install of 'singer' from a github remote, the SHA1 (2b4fe9cb) has not changed since last install.
-##   Use `force = TRUE` to force installation
 ```
 
 ##Question 6 - Write a function for gapminder data
