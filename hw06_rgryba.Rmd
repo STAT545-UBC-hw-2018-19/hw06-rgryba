@@ -2,13 +2,7 @@
 title: "Stat547 Homework 6"
 author: "Rowenna Gryba"
 date: "2018-11-05"
-output:
-  html_document:
-    keep_md: true
-theme: cerulean
-number_sections: true
-editor_options: 
-  chunk_output_type: inline
+output: github_document
 ---
   
 ```{r}
