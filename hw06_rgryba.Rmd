@@ -11,9 +11,9 @@ library(repurrrsive)
 library(gapminder)
 ```
 
-##Question 6 - Write a function for gapminder data
-This function runs a linear model to model the relationship between two variables using a grouping variable. The output is a dataframe with the variable and associated lm output, for those models that had significant p-values.
-The example below uses the gapminder data and compares population to year for each country.
+##Question 2 - Write a function for gapminder data
+This function runs a linear model to explore the relationship between two variables using a grouping variable. The output is a dataframe with the variable and associated lm output, selecting those models that had significant p-values.
+The example below applies the function to the gapminder data and compares population to year for each country.
 
 ```{r echo=TRUE}
 str(gapminder)
@@ -31,4 +31,21 @@ lm_function <- function(df, y, x, group_var) {
 }
 
 lm_function(df=gapminder,y="pop", x="year", group_var=country)
+```
+
+##Question 5a - Working through the purrr tutorial on a list of GitHub users
+```{r}
+library(repurrrsive)
+library(listviewer)
+library(jsonlite)
+library(dplyr)
+library(tibble)
+library(purrr)
+```
+
+Explore the data
+```{r}
+str(gh_users)
+str(gh_users, max.level = 2) #shows only the first two levels
+str(gh_users, list.len = 2) #shows only the first two elements in each level
 ```
