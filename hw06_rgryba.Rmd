@@ -3,6 +3,7 @@ title: "Stat547 Homework 6"
 author: "Rowenna Gryba"
 date: "2018-11-05"
 output: github_document
+always_allow_html: yes
 ---
   
 ```{r}
@@ -33,7 +34,7 @@ lm_function <- function(df, y, x, group_var) {
 lm_function(df=gapminder,y="pop", x="year", group_var=country)
 ```
 
-##Question 5a - Working through the purrr tutorial on a list of GitHub users
+##Question 5 - Working through the purrr tutorial on a list of GitHub users
 ```{r}
 library(repurrrsive)
 library(listviewer)
@@ -43,16 +44,16 @@ library(tibble)
 library(purrr)
 ```
 
-Exploring the data
+###Exploring the data
 ```{r}
-str(gh_users)
+#str(gh_users) - long! so not including here in output
 str(gh_users, max.level = 2) #shows only the first two levels
 str(gh_users, list.len = 2) #shows only the first two elements in each level
 gh_users[[5]][5]
 gh_users[[5]]$url
 ```
 
-Name and position shortcuts
+###Name and position shortcuts
 ```{r}
 names(gh_users[[5]]) #names of the list items for user 5
 gh_users %>% 
@@ -61,24 +62,25 @@ gh_users %>%
   map(29)
 ```
 
-Type specific map()
+###Type specific map()
 ```{r}
 map_int(gh_users, "id") #list ids
 str(gh_users[[1]]) #find logical list element - limiting to only first user for ease
 map_lgl(gh_users, "site_admin")
 ```
 
-Extracting multiple values
+###Extracting multiple values
 ```{r}
 str(gh_users[[1]])
 map(gh_users, `[`, c(1, 18, 2, 21)) #geting login", "name", "id", "location" by position
 ```
 
-Data frame output
+###Data frame output
 ```{r}
 map_df(gh_users, `[`, c("name", "following", "created_at"))
 ```
-Repositories for each user and extraction
+
+###Repositories for each user and extraction
 ```{r}
 str(gh_repos, list.len=2)  #get length and length of each element but missing some of the lists
 jsonedit(gh_repos)
@@ -86,9 +88,33 @@ map_chr(gh_repos, c(1, 4, 1)) #usernames
 
 ```
 
-List inside a dataframe
+###List inside a dataframe
+```{r}
+(unames <- map_chr(gh_repos, c(1, 4, 1)))
+(udf <- gh_repos %>%
+    set_names(unames) %>% 
+    enframe("username", "gh_repos"))
+udf %>% 
+  mutate(n_repos = map_int(gh_repos, length))
+#to pull name, fork and open_issues for each users respos - map within map!
+udf %>% 
+  mutate(repo_info = gh_repos %>%
+           map(. %>% map_df(`[`, c("name", "fork", "open_issues"))))
 
+#now to make it readable!
+(rdf <- udf %>% 
+   mutate(
+     repo_info = gh_repos %>%
+       map(. %>% map_df(`[`, c("name", "fork", "open_issues")))
+   ) %>% 
+   select(-gh_repos) %>% 
+   tidyr::unnest())
 
-##Question 5b - purrr lesson using Github users
-
-
+#highest number of issues each user has
+rdf %>% 
+  filter(!fork) %>% 
+  select(-fork) %>% 
+  group_by(username) %>%
+  arrange(username, desc(open_issues)) %>%
+  slice(1:3)
+```
