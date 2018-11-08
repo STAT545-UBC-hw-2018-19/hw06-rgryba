@@ -43,9 +43,52 @@ library(tibble)
 library(purrr)
 ```
 
-Explore the data
+Exploring the data
 ```{r}
 str(gh_users)
 str(gh_users, max.level = 2) #shows only the first two levels
 str(gh_users, list.len = 2) #shows only the first two elements in each level
+gh_users[[5]][5]
+gh_users[[5]]$url
 ```
+
+Name and position shortcuts
+```{r}
+names(gh_users[[5]]) #names of the list items for user 5
+gh_users %>% 
+  map("created_at") #the created at variable for each user
+gh_users %>% 
+  map(29)
+```
+
+Type specific map()
+```{r}
+map_int(gh_users, "id") #list ids
+str(gh_users[[1]]) #find logical list element - limiting to only first user for ease
+map_lgl(gh_users, "site_admin")
+```
+
+Extracting multiple values
+```{r}
+str(gh_users[[1]])
+map(gh_users, `[`, c(1, 18, 2, 21)) #geting login", "name", "id", "location" by position
+```
+
+Data frame output
+```{r}
+map_df(gh_users, `[`, c("name", "following", "created_at"))
+```
+Repositories for each user and extraction
+```{r}
+str(gh_repos, list.len=2)  #get length and length of each element but missing some of the lists
+jsonedit(gh_repos)
+map_chr(gh_repos, c(1, 4, 1)) #usernames
+
+```
+
+List inside a dataframe
+
+
+##Question 5b - purrr lesson using Github users
+
+
