@@ -1,7 +1,7 @@
 ---
 title: "Stat547 Homework 6"
 author: "Rowenna Gryba"
-date: "2018-11-05"
+date: "2018-11-07"
 output: github_document
 always_allow_html: yes
 ---
