@@ -34,73 +34,90 @@ lm_function <- function(df, y, x, group_var) {
 lm_function(df=gapminder,y="pop", x="year", group_var=country)
 ```
 
-##Question 5 - Working through the purrr tutorial on a list of GitHub users
+##Question 5 - A purrr tutorial on a list of GitHub users
+
+First install required packages. We are installing packages that allow us to view databased with lists (listviewer, jsonlite) as well as purrr and others.
 ```{r}
 library(repurrrsive)
 library(listviewer)
 library(jsonlite)
 library(dplyr)
 library(tibble)
-library(purrr)
+library(purrr) #don't forget the third 'r'!
 ```
 
-###Exploring the data
+###1. Exploring the data
+str() is a useful way to explore databases with lists. First use str() without any options and then try adding some of the options like max.level and list.len. What are the benefits of these options?
 ```{r}
-#str(gh_users) - long! so not including here in output
-str(gh_users, max.level = 2) #shows only the first two levels
-str(gh_users, list.len = 2) #shows only the first two elements in each level
+str(gh_users) 
+str(gh_users, max.level = 2) 
+str(gh_users, list.len = 2)
+```
+
+Another way to limit what the list output is to use [[]]. Use it to explore one of the users and the associated elements and then find two ways to pull out the url for that user (one with position and one with the name. Hint: Try using names () to explore the data.
+```{r}
+names(gh_users[[5]])
 gh_users[[5]][5]
 gh_users[[5]]$url
 ```
 
-###Name and position shortcuts
+Using a combination of piping and map() determine the company for each user
 ```{r}
-names(gh_users[[5]]) #names of the list items for user 5
 gh_users %>% 
-  map("created_at") #the created at variable for each user
-gh_users %>% 
-  map(29)
+  map(19)
 ```
 
-###Type specific map()
+###2. Extracting multiple values
+There are two ways (one using position and one using the name) to extract multiple values from the data.
 ```{r}
-map_int(gh_users, "id") #list ids
-str(gh_users[[1]]) #find logical list element - limiting to only first user for ease
-map_lgl(gh_users, "site_admin")
+map(gh_users, `[`, c(1, 18, 2, 21)) #geting "login", "name", "id", "location" by position
+map(gh_users, `[`, c("login","name", "id", "location"))
 ```
 
-###Extracting multiple values
+Now get the login, name, id and location for the users and put it into a dataframe using the map() options.
 ```{r}
-str(gh_users[[1]])
-map(gh_users, `[`, c(1, 18, 2, 21)) #geting login", "name", "id", "location" by position
-```
-
-###Data frame output
-```{r}
-map_df(gh_users, `[`, c("name", "following", "created_at"))
+map_df(gh_users, `[`, c("login","name", "id", "location"))
 ```
 
 ###Repositories for each user and extraction
+Often users of git_hub will have multiple repositories - like we do for participation and for homework and hopefully for your own projects now too!
+Look at the gh_repos data - may want to use some of those limiting options if you are using str()...it's big. BUT take note if all of the lists are shown.
 ```{r}
 str(gh_repos, list.len=2)  #get length and length of each element but missing some of the lists
-jsonedit(gh_repos)
-map_chr(gh_repos, c(1, 4, 1)) #usernames
+```
 
+Try using jsonedit to look at it - a bit easier in this case? What are the tradeoffs between using str() and jsonedit()?
+```{r}
+jsonedit(gh_repos)
+```
+
+To get at specific data within the list levels you can use a combo of map_chr() and c(). NOTE: it is working through positions NOT calling the 1st and 4th element of all of the users.
+```{r}
+map_chr(gh_repos, c(1, 3)) 
+```
+
+Use the above apporach to find usernames.
+```{r}
+map_chr(gh_repos, c(1, 4, 1)) 
 ```
 
 ###List inside a dataframe
+Map() has some great features including being able to use a map() as the function within map().
+Let's try to get the "name" and "fork" for each user. 
 ```{r}
-(unames <- map_chr(gh_repos, c(1, 4, 1)))
+(unames <- map_chr(gh_repos, c(1, 4, 1))) #First lets get the users names using our method above
 (udf <- gh_repos %>%
     set_names(unames) %>% 
-    enframe("username", "gh_repos"))
+    enframe("username", "gh_repos")) #now were are adding all the repo data in as a list
 udf %>% 
   mutate(n_repos = map_int(gh_repos, length))
 #to pull name, fork and open_issues for each users respos - map within map!
 udf %>% 
   mutate(repo_info = gh_repos %>%
            map(. %>% map_df(`[`, c("name", "fork", "open_issues"))))
-
+```
+How would we make this more readable? Hint: unnest().
+```{r}
 #now to make it readable!
 (rdf <- udf %>% 
    mutate(
@@ -109,12 +126,4 @@ udf %>%
    ) %>% 
    select(-gh_repos) %>% 
    tidyr::unnest())
-
-#highest number of issues each user has
-rdf %>% 
-  filter(!fork) %>% 
-  select(-fork) %>% 
-  group_by(username) %>%
-  arrange(username, desc(open_issues)) %>%
-  slice(1:3)
 ```
